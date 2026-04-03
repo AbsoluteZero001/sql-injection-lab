@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,8 +105,23 @@
             font-size: 13px;
             line-height: 1.6;
         }
+
+        .error-message {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .error-message p {
+            color: #721c24;
+            font-size: 14px;
+            font-weight: 500;
+        }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-header">
@@ -124,6 +140,10 @@
                 <input type="password" id="password" name="password" placeholder="请输入数据库密码" required>
             </div>
 
+            <div th:if="${error != null}" class="error-message">
+                <p th:text="${error}"></p>
+            </div>
+
             <button type="submit" class="btn-submit">登 录</button>
         </form>
 
@@ -132,4 +152,5 @@
         </div>
     </div>
 </body>
+
 </html>
