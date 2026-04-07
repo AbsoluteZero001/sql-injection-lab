@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL 注入实验室 - 登录</title>
+    <title>文章管理系统 - 登录</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -68,13 +68,13 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #4facfe;
         }
 
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
             border: none;
             border-radius: 5px;
@@ -92,16 +92,16 @@
             transform: translateY(0);
         }
 
-        .warning-message {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
+        .system-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
             padding: 15px;
             margin-top: 20px;
             border-radius: 5px;
         }
 
-        .warning-message p {
-            color: #856404;
+        .system-info p {
+            color: #1565c0;
             font-size: 13px;
             line-height: 1.6;
         }
@@ -125,19 +125,19 @@
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>🔐 SQL 注入实验室</h1>
-            <p>数据库安全测试平台</p>
+            <h1>文章管理系统</h1>
+            <p>专业的内容管理平台</p>
         </div>
 
         <form action="/login" method="POST">
             <div class="form-group">
-                <label for="username">数据库用户名</label>
-                <input type="text" id="username" name="username" placeholder="请输入数据库用户名" required autofocus>
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" required autofocus>
             </div>
 
             <div class="form-group">
-                <label for="password">数据库密码</label>
-                <input type="password" id="password" name="password" placeholder="请输入数据库密码" required>
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" placeholder="请输入密码" required>
             </div>
 
             <div th:if="${error != null}" class="error-message">
@@ -147,8 +147,8 @@
             <button type="submit" class="btn-submit">登 录</button>
         </form>
 
-        <div class="warning-message">
-            <p>⚠️ <strong>警告：</strong>本系统仅用于 SQL 注入攻击的模拟测试和安全研究，请勿用于非法用途。</p>
+        <div class="system-info">
+            <p>ℹ️ <strong>系统信息：</strong>本系统用于管理和发布文章内容，支持用户权限管理和内容编辑。</p>
         </div>
     </div>
 </body>
