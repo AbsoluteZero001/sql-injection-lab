@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章管理系统 - 用户首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .user-info span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .header .btn-logout {
+            padding: 8px 16px;
+            background: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .header .btn-logout:hover {
+            background: #d32f2f;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar ul li a.active {
+            background: #1976d2;
+            border-left: 4px solid #4facfe;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .comment-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .comment-section h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .comment-form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 5px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .comments-list {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .comments-list h4 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .comment-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .comment-content {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .comment-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 文章管理系统</h1>
+        <div class="user-info">
+            <span>欢迎，用户</span>
+            <a href="/" class="btn-logout">退出登录</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="/user/home" class="active">用户首页</a></li>
+                <li><a href="/user/comments">我的评论</a></li>
+                <li><a href="/user/profile">个人资料</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2>欢迎使用文章管理系统</h2>
+                <p>您已成功登录系统，现在可以查看和发布评论。</p>
+            </div>
+
+            <div class="comment-section">
+                <h3>发表评论</h3>
+                <form action="/user/addComment" method="POST" class="comment-form">
+                    <div class="form-group">
+                        <label for="content">评论内容</label>
+                        <textarea id="content" name="content" placeholder="请输入您的评论..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交评论</button>
+                </form>
+
+                <div class="comments-list">
+                    <h4>评论列表</h4>
+                    <div th:each="comment : ${comments}" class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author" th:text="${comment.username}"></span>
+                            <span class="comment-date" th:text="${comment.created_at}"></span>
+                        </div>
+                        <div class="comment-content" th:utext="${comment.content}"></div>
+                        <div class="comment-status" th:class="'comment-status status-' + ${comment.status}" th:text="${comment.status == 'pending' ? '待审核' : comment.status == 'approved' ? '已通过' : '已拒绝'}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
