@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文章管理系统 - 登录</title>
+    <title>文章管理系统 - 注册</title>
     <style>
         * {
             margin: 0;
@@ -91,24 +91,24 @@
             }
         }
 
-        /* 登录容器 */
-        .login-container {
+        /* 注册容器 */
+        .register-container {
             background: rgba(255, 255, 255, 0.95);
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .login-header h1 {
+        .register-header h1 {
             color: #333;
             font-size: 28px;
             margin-bottom: 10px;
@@ -117,7 +117,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .login-header p {
+        .register-header p {
             color: #666;
             font-size: 14px;
         }
@@ -135,7 +135,9 @@
             font-size: 14px;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e1e1e1;
@@ -145,11 +147,18 @@
             background: rgba(255, 255, 255, 0.8);
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #4facfe;
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
             transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         /* 按钮样式 */
@@ -192,36 +201,21 @@
         }
 
         /* 链接样式 */
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 20px;
         }
 
-        .register-link a {
+        .login-link a {
             color: #4facfe;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             color: #00f2fe;
             text-decoration: underline;
-        }
-
-        /* 系统信息 */
-        .system-info {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-
-        .system-info p {
-            color: #1565c0;
-            font-size: 13px;
-            line-height: 1.6;
         }
     </style>
 </head>
@@ -236,16 +230,16 @@
         <span></span>
     </div>
 
-    <div class="login-container">
-        <div class="login-header">
-            <h1>文章管理系统</h1>
-            <p>专业的内容管理平台</p>
+    <div class="register-container">
+        <div class="register-header">
+            <h1>用户注册</h1>
+            <p>创建新账号，开始使用文章管理系统</p>
         </div>
 
-        <form action="/login" method="POST">
+        <form action="/register" method="POST">
             <div class="form-group">
                 <label for="username">用户名</label>
-                <input type="text" id="username" name="username" placeholder="请输入用户名" required autofocus>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" required>
             </div>
 
             <div class="form-group">
@@ -253,19 +247,41 @@
                 <input type="password" id="password" name="password" placeholder="请输入密码" required>
             </div>
 
-            <div th:if="${error != null}" class="error-message">
-                <p th:text="${error}"></p>
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" id="email" name="email" placeholder="请输入邮箱" required>
             </div>
 
-            <button type="submit" class="btn-submit">登 录</button>
+            <div class="form-group">
+                <label for="status">状态</label>
+                <select id="status" name="status" required>
+                    <option value="active">活跃</option>
+                    <option value="inactive">非活跃</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="role">角色</label>
+                <select id="role" name="role" required>
+                    <option value="user">普通用户</option>
+                    <option value="admin">管理员</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">描述</label>
+                <textarea id="description" name="description" placeholder="请输入描述" rows="3"></textarea>
+            </div>
+
+            <div th:if="${registerError != null}" class="error-message">
+                <p th:text="${registerError}"></p>
+            </div>
+
+            <button type="submit" class="btn-submit">注 册</button>
         </form>
 
-        <div class="register-link">
-            <p>还没有账号？ <a href="/register">立即注册</a></p>
-        </div>
-
-        <div class="system-info">
-            <p>ℹ️ <strong>系统信息：</strong>本系统用于管理和发布文章内容，支持用户权限管理和内容编辑。</p>
+        <div class="login-link">
+            <p>已有账号？ <a href="/">立即登录</a></p>
         </div>
     </div>
 </body>

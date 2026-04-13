@@ -61,7 +61,7 @@ public class LoginController {
     // 注册页面
     @GetMapping("/register")
     public String registerPage() {
-        return "login";
+        return "register";
     }
 
     // 处理注册
