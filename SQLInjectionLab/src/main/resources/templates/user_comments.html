@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文章管理系统 - 评论审核</title>
+    <title>文章管理系统 - 我的评论</title>
     <style>
         * {
             margin: 0;
@@ -37,6 +36,13 @@
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        .header .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .header .user-info span {
@@ -134,7 +140,7 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #ff9800;
+            border-left: 4px solid #4facfe;
         }
 
         .comment-header {
@@ -166,38 +172,26 @@
             border: 1px solid #e0e0e0;
         }
 
-        .comment-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 14px;
+        .comment-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
             font-weight: 500;
-            text-decoration: none;
-            transition: background 0.3s;
-            border: none;
-            cursor: pointer;
         }
 
-        .btn-primary {
-            background: #1976d2;
-            color: white;
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .btn-primary:hover {
-            background: #1565c0;
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
         }
 
-        .btn-danger {
-            background: #f44336;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #d32f2f;
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         .no-comments {
@@ -208,12 +202,12 @@
         }
     </style>
 </head>
-
 <body>
     <div class="header">
         <h1>📝 文章管理系统</h1>
         <div class="user-info">
-            <span>欢迎，管理员</span>
+            <img th:src="@{/uploads/{avatar}(avatar=${user?.avatar})}" alt="头像" class="avatar" />
+            <span>欢迎，用户</span>
             <a href="/" class="btn-logout">退出登录</a>
         </div>
     </div>
@@ -221,46 +215,34 @@
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="/admin/dashboard">管理员首页</a></li>
-                <li><a href="/admin/comments" class="active">评论审核</a></li>
-                <li><a href="/admin/users">用户管理</a></li>
-                <li><a href="/admin/articles">文章管理</a></li>
-                <li><a href="/admin/settings">系统设置</a></li>
+                <li><a href="/user/home">用户首页</a></li>
+                <li><a href="/user/comments" class="active">我的评论</a></li>
+                <li><a href="/user/profile">个人资料</a></li>
             </ul>
         </div>
 
         <div class="main-content">
             <div class="page-header">
-                <h2>评论审核</h2>
+                <h2>我的评论</h2>
             </div>
 
             <div class="comments-section">
-                <h3>待审核评论</h3>
-
+                <h3>评论列表</h3>
+                
                 <div th:if="${comments.empty}" class="no-comments">
-                    暂无待审核评论
+                    暂无评论
                 </div>
-
+                
                 <div th:each="comment : ${comments}" class="comment-item">
                     <div class="comment-header">
                         <span class="comment-author" th:text="${comment.username}"></span>
                         <span class="comment-date" th:text="${comment.created_at}"></span>
                     </div>
-                    <div class="comment-content" th:utext="${comment.content}"></div>
-                    <div class="comment-actions">
-                        <form action="/admin/approveComment" method="POST" style="display: inline;">
-                            <input type="hidden" name="id" th:value="${comment.id}">
-                            <button type="submit" class="btn btn-primary">通过</button>
-                        </form>
-                        <form action="/admin/rejectComment" method="POST" style="display: inline;">
-                            <input type="hidden" name="id" th:value="${comment.id}">
-                            <button type="submit" class="btn btn-danger">拒绝</button>
-                        </form>
-                    </div>
+                    <div class="comment-content" th:text="${comment.content}"></div>
+                    <div class="comment-status" th:class="'comment-status status-' + ${comment.status}" th:text="${comment.status == 'pending' ? '待审核' : comment.status == 'approved' ? '已通过' : '已拒绝'}"></div>
                 </div>
             </div>
         </div>
     </div>
 </body>
-
 </html>

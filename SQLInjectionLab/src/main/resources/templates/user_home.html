@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,6 +37,13 @@
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        .header .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .header .user-info span {
@@ -254,10 +262,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>📝 文章管理系统</h1>
         <div class="user-info">
+            <img th:src="@{/uploads/{avatar}(avatar=${user?.avatar})}" alt="头像" class="avatar" />
             <span>欢迎，用户</span>
             <a href="/" class="btn-logout">退出登录</a>
         </div>
@@ -292,15 +302,22 @@
                     <h4>评论列表</h4>
                     <div th:each="comment : ${comments}" class="comment-item">
                         <div class="comment-header">
-                            <span class="comment-author" th:text="${comment.username}"></span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img th:src="@{/uploads/{avatar}(avatar=${comment.avatar})}" alt="头像"
+                                    style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                                <span class="comment-author" th:text="${comment.username}"></span>
+                            </div>
                             <span class="comment-date" th:text="${comment.created_at}"></span>
                         </div>
-                        <div class="comment-content" th:utext="${comment.content}"></div>
-                        <div class="comment-status" th:class="'comment-status status-' + ${comment.status}" th:text="${comment.status == 'pending' ? '待审核' : comment.status == 'approved' ? '已通过' : '已拒绝'}"></div>
+                        <div class="comment-content" th:text="${comment.content}"></div>
+                        <div class="comment-status" th:class="'comment-status status-' + ${comment.status}"
+                            th:text="${comment.status == 'pending' ? '待审核' : comment.status == 'approved' ? '已通过' : '已拒绝'}">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>

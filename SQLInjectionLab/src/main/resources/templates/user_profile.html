@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章管理系统 - 个人资料</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .header .user-info span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .header .btn-logout {
+            padding: 8px 16px;
+            background: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .header .btn-logout:hover {
+            background: #d32f2f;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar ul li a.active {
+            background: #1976d2;
+            border-left: 4px solid #4facfe;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .page-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .profile-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 4px solid #f5f5f5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-name {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .avatar-upload {
+            margin-bottom: 20px;
+        }
+
+        .avatar-upload label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .avatar-upload input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .error-message p {
+            color: #721c24;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .success-message p {
+            color: #155724;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 文章管理系统</h1>
+        <div class="user-info">
+            <img th:src="@{/uploads/{avatar}(avatar=${user.avatar})}" alt="头像" class="avatar" />
+            <span th:text="${user.username}"></span>
+            <a href="/" class="btn-logout">退出登录</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="/user/home">用户首页</a></li>
+                <li><a href="/user/comments">我的评论</a></li>
+                <li><a href="/user/profile" class="active">个人资料</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h2>个人资料</h2>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-header">
+                    <img th:src="@{/uploads/{avatar}(avatar=${user.avatar})}" alt="头像" class="profile-avatar" />
+                    <h3 class="profile-name" th:text="${user.username}"></h3>
+                    <p class="profile-email" th:text="${user.email}"></p>
+                </div>
+
+                <div th:if="${error != null}" class="error-message">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <div th:if="${success != null}" class="success-message">
+                    <p th:text="${success}"></p>
+                </div>
+
+                <form action="/user/updateProfile" method="POST" enctype="multipart/form-data">
+                    <div class="avatar-upload">
+                        <label for="avatar">修改头像</label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*" onchange="previewAvatar(event)">
+                        <small style="color: #666; display: block; margin-bottom: 10px;">支持JPG、PNG、GIF格式，最大2MB，建议尺寸50x50到2000x2000像素</small>
+                        <div id="avatar-preview-container" style="display: none; margin-top: 10px;">
+                            <img id="avatar-preview" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;" />
+                            <div style="margin-top: 5px; font-size: 12px; color: #666;">新头像预览</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" name="username" th:value="${user.username}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" id="email" name="email" th:value="${user.email}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">密码（留空表示不修改）</label>
+                        <input type="password" id="password" name="password" placeholder="请输入密码">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">状态</label>
+                        <select id="status" name="status" required>
+                            <option th:value="'active'" th:selected="${user.status == 'active'}">活跃</option>
+                            <option th:value="'inactive'" th:selected="${user.status == 'inactive'}">非活跃</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">描述</label>
+                        <textarea id="description" name="description" th:text="${user.description}" placeholder="请输入描述"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">保存修改</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewAvatar(event) {
+            const input = event.target;
+            const previewContainer = document.getElementById('avatar-preview-container');
+            const previewImg = document.getElementById('avatar-preview');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // 验证文件大小（2MB）
+                const maxSize = 2 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert('文件大小不能超过2MB');
+                    input.value = '';
+                    previewContainer.style.display = 'none';
+                    return;
+                }
+
+                // 验证文件类型
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('只支持JPG、PNG、GIF格式的图片');
+                    input.value = '';
+                    previewContainer.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

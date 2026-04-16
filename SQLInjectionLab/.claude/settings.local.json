@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find *)",
+      "Bash(curl -s -o default.png \"https://via.placeholder.com/100x100.png?text=Avatar\")",
+      "Bash(mvn compile *)"
+    ]
+  }
+}
