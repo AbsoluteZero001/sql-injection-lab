@@ -1,6 +1,12 @@
 -- 删除现有表（如果存在）
+-- 临时禁用外键约束检查
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS settings;
+-- 重新启用外键约束检查
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- 创建 users 表
 CREATE TABLE IF NOT EXISTS users (

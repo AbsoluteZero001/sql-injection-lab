@@ -1,8 +1,12 @@
 -- 清空旧数据（可选，确保每次启动数据一致）
+-- 临时禁用外键约束检查
+SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM comments;
-DELETE FROM users;
 DELETE FROM articles;
+DELETE FROM users;
 DELETE FROM settings;
+-- 重新启用外键约束检查
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- 初始化用户数据（密码使用BCrypt加密）
 INSERT INTO users (username, password, email, status, role, description) VALUES ('admin', '$2a$10$UQkvtlDY1f6DG6eLBCH1WuMLvJG4hU09hi8TPh6j2A/0fh1vE0BaO', 'admin@example.com', 'active', 'admin', 'Administrator account');
