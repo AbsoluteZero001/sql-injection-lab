@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50),
-    password VARCHAR(50),
+    password VARCHAR(100),
     email VARCHAR(100),
     status VARCHAR(20),
     role VARCHAR(20) DEFAULT 'user', -- user, admin

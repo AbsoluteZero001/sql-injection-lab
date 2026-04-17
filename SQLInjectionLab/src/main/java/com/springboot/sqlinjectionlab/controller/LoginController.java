@@ -2,6 +2,7 @@ package com.springboot.sqlinjectionlab.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +18,16 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.HashSet;
 
 @Controller
 public class LoginController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
     public String loginPage(Model model, @RequestParam(value = "error", required = false) String error) {
@@ -38,19 +40,27 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model) {
         try {
-            // 检查用户名和密码是否正确，并获取用户信息
-            String checkUserSql = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password
-                    + "'";
-            List<Map<String, Object>> users = jdbcTemplate.queryForList(checkUserSql);
+            // 通过用户名获取用户信息（保留SQL注入漏洞）
+            String getUserSql = "SELECT * FROM users WHERE username = '" + username + "'";
+            List<Map<String, Object>> users = jdbcTemplate.queryForList(getUserSql);
 
             if (users == null || users.isEmpty()) {
-                // 用户不存在或密码错误
+                // 用户不存在
+                model.addAttribute("error", "用户名或密码错误");
+                return "login";
+            }
+
+            // 验证密码
+            Map<String, Object> user = users.get(0);
+            String encodedPassword = (String) user.get("password");
+
+            if (!passwordEncoder.matches(password, encodedPassword)) {
+                // 密码错误
                 model.addAttribute("error", "用户名或密码错误");
                 return "login";
             }
 
             // 登录成功，存储用户信息到会话中
-            Map<String, Object> user = users.get(0);
             Integer userId = ((Number) user.get("id")).intValue();
             String dbUsername = (String) user.get("username");
             String role = (String) user.get("role");
@@ -84,10 +94,24 @@ public class LoginController {
 
     // 处理注册
     @PostMapping("/register")
-    public String register(@RequestParam String username, @RequestParam String password, @RequestParam String email,
+    public String register(@RequestParam String username, @RequestParam String password,
+            @RequestParam String confirmPassword, @RequestParam String email,
             @RequestParam String status, @RequestParam String role, @RequestParam String description,
             Model model) {
         try {
+            // 验证密码匹配
+            if (!password.equals(confirmPassword)) {
+                model.addAttribute("registerError", "两次输入的密码不一致");
+                return "login";
+            }
+
+            // 验证输入数据
+            String validationError = validateRegistrationData(username, password, email, status, role, description);
+            if (validationError != null) {
+                model.addAttribute("registerError", validationError);
+                return "login";
+            }
+
             // 检查用户名是否已存在
             String checkUserSql = "SELECT COUNT(*) as cnt FROM users WHERE username = '" + username + "'";
             List<Map<String, Object>> result = jdbcTemplate.queryForList(checkUserSql);
@@ -99,9 +123,23 @@ public class LoginController {
                 return "login";
             }
 
+            // 检查邮箱是否已存在
+            String checkEmailSql = "SELECT COUNT(*) as cnt FROM users WHERE email = '" + email + "'";
+            List<Map<String, Object>> emailResult = jdbcTemplate.queryForList(checkEmailSql);
+            Integer emailCount = ((Number) emailResult.get(0).get("cnt")).intValue();
+
+            if (emailCount > 0) {
+                // 邮箱已存在
+                model.addAttribute("registerError", "邮箱已被注册");
+                return "login";
+            }
+
+            // 加密密码
+            String encodedPassword = passwordEncoder.encode(password);
+
             // 插入新用户
             String insertUserSql = "INSERT INTO users (username, password, email, status, role, description) " +
-                    "VALUES ('" + username + "', '" + password + "', '" + email + "', '" + status + "', '" + role
+                    "VALUES ('" + username + "', '" + encodedPassword + "', '" + email + "', '" + status + "', '" + role
                     + "', '" + description + "')";
             jdbcTemplate.execute(insertUserSql);
 
@@ -216,7 +254,8 @@ public class LoginController {
                     + "', status = '" + status + "', description = '" + description + "'");
 
             if (password != null && !password.isEmpty()) {
-                sql.append(", password = '" + password + "'");
+                String encodedPassword = passwordEncoder.encode(password);
+                sql.append(", password = '" + encodedPassword + "'");
             }
 
             // 处理头像上传
@@ -366,6 +405,67 @@ public class LoginController {
         } catch (IOException e) {
             // 读取图片失败，可能是损坏的图片文件
             return "无法验证图片文件，请确保文件完整且格式正确";
+        }
+
+        return null; // 验证通过
+    }
+
+    // 验证注册表单数据
+    private String validateRegistrationData(String username, String password, String email,
+                                           String status, String role, String description) {
+        // 验证用户名
+        if (username == null || username.trim().isEmpty()) {
+            return "用户名不能为空";
+        }
+        if (username.length() < 3 || username.length() > 50) {
+            return "用户名长度必须在3-50个字符之间";
+        }
+        // 允许更多字符以支持SQL注入演示（如单引号等）
+        // 注意：不限制特殊字符以允许SQL注入测试
+
+        // 验证密码
+        if (password == null || password.trim().isEmpty()) {
+            return "密码不能为空";
+        }
+        if (password.length() < 6) {
+            return "密码长度至少为6个字符";
+        }
+        if (password.length() > 50) {
+            return "密码长度不能超过50个字符";
+        }
+
+        // 验证邮箱
+        if (email == null || email.trim().isEmpty()) {
+            return "邮箱不能为空";
+        }
+        // 简单的邮箱格式验证
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        if (!email.matches(emailRegex)) {
+            return "邮箱格式不正确";
+        }
+        if (email.length() > 100) {
+            return "邮箱长度不能超过100个字符";
+        }
+
+        // 验证状态
+        if (status == null || status.trim().isEmpty()) {
+            return "状态不能为空";
+        }
+        if (!status.equals("active") && !status.equals("inactive")) {
+            return "状态必须是active或inactive";
+        }
+
+        // 验证角色
+        if (role == null || role.trim().isEmpty()) {
+            return "角色不能为空";
+        }
+        if (!role.equals("user") && !role.equals("admin")) {
+            return "角色必须是user或admin";
+        }
+
+        // 验证描述（可选）
+        if (description != null && description.length() > 1000) {
+            return "描述长度不能超过1000个字符";
         }
 
         return null; // 验证通过
