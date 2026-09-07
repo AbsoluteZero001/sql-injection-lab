@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反射型 XSS - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('xss_reflected')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Reflected XSS</div>
+        <h1>搜索词反射型 XSS</h1>
+        <p>服务端把 <code class="mono">q</code> 参数以 HTML 原文插入页面，浏览器会把标签和事件当作真实内容解析。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>站内搜索</h2>
+                <p>GET 请求携带 <code class="mono">q</code>，关键词会同时出现在输入框与结果摘要中。</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/lab}">返回总览</a>
+        </div>
+        <div class="panel-body">
+            <form class="form-grid" method="get" th:action="@{/lab/xss/reflected}">
+                <div class="field">
+                    <label for="xss-q">搜索内容</label>
+                    <input id="xss-q" type="text" name="q" th:value="${q}" placeholder="输入一个 HTML 片段或普通关键词" autofocus>
+                </div>
+                <div class="field">
+                    <button class="btn btn-primary" type="submit">搜索</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>搜索结果</h2>
+        </div>
+        <div class="panel-body">
+            <div class="search-output">
+                <article class="search-line">
+                    <h3 class="search-title">关于 “<span th:utext="${q}">关键词</span>” 的内容</h3>
+                    <p class="search-url">/lab/xss/reflected?q=<span th:text="${q}">参数值</span></p>
+                    <p class="search-snippet">找到 3 条相关记录，第一条摘要包含：<span th:utext="${q}">关键词</span>。页面当前以原始 HTML 渲染输入。</p>
+                </article>
+                <article class="search-line">
+                    <h3 class="search-title">示例文章</h3>
+                    <p class="search-url">/posts/how-to-build-a-lab</p>
+                    <p class="search-snippet">把输入直接拼进页面输出，是反射型 XSS 最常见的触发位置。</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>练习载荷</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="payload-list">
+                <li>&lt;script&gt;alert(document.domain)&lt;/script&gt;</li>
+                <li>&lt;img src=x onerror=alert(document.domain)&gt;</li>
+                <li>&lt;svg/onload=alert(1)&gt;</li>
+                <li>&lt;details open ontoggle=alert(1)&gt;</li>
+            </ul>
+        </div>
+        <div class="panel-footer">把载荷放入搜索框提交即可观察；触发弹窗后记得关闭浏览器提示，不要影响其他标签页。</div>
+    </section>
+</main>
+</body>
+</html>

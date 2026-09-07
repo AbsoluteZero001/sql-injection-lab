@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS settings;
+DROP TABLE IF EXISTS lab_messages;
 -- 重新启用外键约束检查
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -49,4 +50,12 @@ CREATE TABLE IF NOT EXISTS settings (
     setting_value TEXT,
     description VARCHAR(255),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 创建 lab_messages 表（存储型 XSS 实验留言板）
+CREATE TABLE IF NOT EXISTS lab_messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    author VARCHAR(50) DEFAULT 'anonymous',
+    content TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

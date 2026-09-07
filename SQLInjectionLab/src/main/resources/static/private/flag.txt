@@ -1,0 +1,4 @@
+FLAG{directory_brute_force_complete}
+
+你已经找到了未授权的私有目录。
+请继续查看 /admin-panel/、/console/ 与 /staging/ 中遗留的静态页面。

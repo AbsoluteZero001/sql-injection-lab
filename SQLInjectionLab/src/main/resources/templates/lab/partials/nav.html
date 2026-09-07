@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="lab-top" th:fragment="nav(active)">
+    <a class="brand" href="/lab">SQLi / XSS 实验区</a>
+    <nav aria-label="实验区导航">
+        <a th:classappend="${active == 'index'} ? 'active' : ''" href="/lab">总览</a>
+        <a th:classappend="${active == 'union'} ? 'active' : ''" href="/lab/union">Union</a>
+        <a th:classappend="${active == 'error'} ? 'active' : ''" href="/lab/sql/error">报错</a>
+        <a th:classappend="${active == 'boolean'} ? 'active' : ''" href="/lab/sql/boolean">布尔盲注</a>
+        <a th:classappend="${active == 'time'} ? 'active' : ''" href="/lab/sql/time">时间盲注</a>
+        <a th:classappend="${active == 'xss_reflected'} ? 'active' : ''" href="/lab/xss/reflected">反射 XSS</a>
+        <a th:classappend="${active == 'xss_stored'} ? 'active' : ''" href="/lab/xss/stored">存储 XSS</a>
+        <a th:classappend="${active == 'discovery'} ? 'active' : ''" href="/lab/discovery">目录探测</a>
+    </nav>
+</header>
+</body>
+</html>

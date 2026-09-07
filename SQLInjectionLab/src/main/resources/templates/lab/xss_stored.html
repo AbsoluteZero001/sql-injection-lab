@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>存储型 XSS 留言板 - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('xss_stored')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Stored XSS</div>
+        <h1>存储型 XSS 留言板</h1>
+        <p>每条留言都会保存到数据库并在列表中原样渲染。任何后来访问页面的人都会执行被写入的 HTML 或脚本。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>发布留言</h2>
+                <p>留言内容不做转义，存储后再由所有访问者读取。</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/lab}">返回总览</a>
+        </div>
+        <div class="panel-body">
+            <div th:if="${param.posted != null}" class="notice">
+                <strong>已发布</strong>：留言已保存，刷新页面后脚本会再次执行。
+            </div>
+            <div th:if="${param.error != null}" class="notice">
+                <strong>提示</strong>：留言内容不能为空。
+            </div>
+            <div th:if="${dbError != null}" class="db-error" th:text="${dbError}">数据库错误</div>
+
+            <form class="form-grid" method="post" th:action="@{/lab/xss/stored}">
+                <div class="field">
+                    <label for="stored-author">昵称</label>
+                    <input id="stored-author" type="text" name="author" maxlength="50" value="anonymous">
+                </div>
+                <div class="field">
+                    <button class="btn btn-primary" type="submit">发布留言</button>
+                </div>
+                <div class="field full">
+                    <label for="stored-content">留言内容</label>
+                    <textarea id="stored-content" name="content" placeholder="留空也可，但至少要写点东西"></textarea>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>留言列表</h2>
+            <span class="status-pill info" th:text="${messages == null ? 0 : messages.size()} + ' 条留言'">0 条留言</span>
+        </div>
+        <div class="panel-body">
+            <div th:if="${messages == null or messages.empty}" class="empty-state">暂无留言。</div>
+            <div class="message-list">
+                <article class="message-item" th:each="message : ${messages}">
+                    <div class="message-meta">
+                        <span class="message-author" th:text="${message.author}">匿名</span>
+                        <span th:text="${message.created_at}">时间</span>
+                    </div>
+                    <div class="message-content" th:utext="${message.content}">留言内容</div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>练习载荷</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="payload-list">
+                <li>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</li>
+                <li>&lt;img src=x onerror=alert('stored-xss')&gt;</li>
+                <li>&lt;a href=javascript:alert(1)&gt;点我&lt;/a&gt;</li>
+            </ul>
+        </div>
+        <div class="panel-footer">发布后可在普通访问者视角再次打开本页观察效果；建议使用浏览器调试工具检查 DOM 中真实插入的节点。</div>
+    </section>
+</main>
+</body>
+</html>

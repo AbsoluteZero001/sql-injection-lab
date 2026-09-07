@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隐藏目录与静态页面 - 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('discovery')}"></div>
+
+<main class="page page-narrow">
+    <section class="hero">
+        <div class="eyebrow">Directory Brute Force</div>
+        <h1>隐藏目录与静态页面</h1>
+        <p>本关故意保留了一批没有链接入口的目录和前端文件。目标是只通过 HTTP 状态码与页面内容，找到至少三个隐藏资源并读取其中标记。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>挑战说明</h2>
+        </div>
+        <div class="panel-body">
+            <div class="notice">
+                <strong>提示：</strong>先查看 <code class="mono">/robots.txt</code>，再结合常见目录字典对本站进行枚举。返回 200、301/302 与页面标题差异都值得继续跟进。
+            </div>
+            <div class="guide">
+                <div class="guide-item">
+                    <h4>需要寻找</h4>
+                    <ul>
+                        <li>带站点标志的静态 HTML 页面</li>
+                        <li>备份或配置文件</li>
+                        <li>最终 flag 文件</li>
+                    </ul>
+                </div>
+                <div class="guide-item">
+                    <h4>常用工具</h4>
+                    <ul>
+                        <li>dirsearch / gobuster / dirb</li>
+                        <li>ffuf</li>
+                        <li>Burp Intruder</li>
+                    </ul>
+                </div>
+                <div class="guide-item">
+                    <h4>命令示例</h4>
+                    <pre class="raw-output">dirsearch -u http://localhost:8080 -w wordlist.txt
+gobuster dir -u http://localhost:8080 -w common.txt</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>建议字典</h2>
+        </div>
+        <div class="panel-body">
+            <pre class="raw-output">admin-panel
+archive
+backup
+console
+docs
+old
+private
+staging
+static
+test
+tmp</pre>
+            <p class="footer-note" style="margin-top: 14px;">字典可以替换为 dirsearch 默认的 <code class="mono">directory-list-2.3-medium.txt</code>，实际隐藏资源不一定只使用上面这些名称。</p>
+        </div>
+        <div class="panel-footer">目录扫描会发送大量请求，请把线程数调低，并在授权靶场上练习。</div>
+    </section>
+</main>
+</body>
+</html>

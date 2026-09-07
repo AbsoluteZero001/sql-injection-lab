@@ -5,6 +5,7 @@ DELETE FROM comments;
 DELETE FROM articles;
 DELETE FROM users;
 DELETE FROM settings;
+DELETE FROM lab_messages;
 -- 重新启用外键约束检查
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -29,3 +30,7 @@ INSERT INTO settings (setting_key, setting_value, description) VALUES ('site_nam
 INSERT INTO settings (setting_key, setting_value, description) VALUES ('site_description', '一个用于学习SQL注入和XSS漏洞的教育平台', '网站描述');
 INSERT INTO settings (setting_key, setting_value, description) VALUES ('comments_enabled', 'true', '是否启用评论功能');
 INSERT INTO settings (setting_key, setting_value, description) VALUES ('registration_enabled', 'true', '是否开放用户注册');
+
+-- 初始化 XSS 留言板示例
+INSERT INTO lab_messages (author, content) VALUES ('系统', '欢迎来到留言板，这里用于练习存储型 XSS。');
+INSERT INTO lab_messages (author, content) VALUES ('管理员', '请勿提交真实个人信息，所有内容都会原样展示。');

@@ -1,0 +1,15 @@
+; legacy application config - keep out of public web roots
+[database]
+host = localhost
+port = 3306
+name = sqli_training_lab
+username = lab_root
+password = Lab@123456
+
+[app]
+env = production
+debug = true
+upload_dir = /tmp/uploads
+
+[flag]
+value = FLAG{database_config_should_not_be_public}

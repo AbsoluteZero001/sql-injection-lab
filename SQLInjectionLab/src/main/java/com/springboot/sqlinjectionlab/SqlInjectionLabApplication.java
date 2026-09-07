@@ -20,8 +20,10 @@ public class SqlInjectionLabApplication {
 			e.printStackTrace();
 		}
 
-		// 自动打开浏览器访问前端页面
-		openBrowser();
+		// 自动打开浏览器访问前端页面；调试时可用 -Dlab.auto-open-browser=false 关闭
+		if (!"false".equalsIgnoreCase(System.getProperty("lab.auto-open-browser", "true"))) {
+			openBrowser();
+		}
 	}
 
 	private static void openBrowser() {

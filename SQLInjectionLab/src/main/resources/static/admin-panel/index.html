@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>旧版后台入口</title>
+    <link rel="stylesheet" href="/lab/lab.css">
+</head>
+<body>
+<main class="page page-narrow">
+    <section class="hero">
+        <div class="eyebrow">Legacy Admin</div>
+        <h1>内容管理系统后台</h1>
+        <p>旧版前端入口，登录校验被写死在浏览器代码里，且保留了一个未公开账号。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>管理员登录</h2>
+        </div>
+        <div class="panel-body">
+            <form class="form-grid" onsubmit="return false;">
+                <div class="field">
+                    <label for="legacy-user">用户名</label>
+                    <input id="legacy-user" type="text" value="admin" readonly>
+                </div>
+                <div class="field">
+                    <label for="legacy-pass">密码</label>
+                    <input id="legacy-pass" type="password" placeholder="请输入密码">
+                </div>
+                <div class="field full">
+                    <button class="btn btn-primary" type="button" onclick="verifyLogin()">登录</button>
+                </div>
+            </form>
+            <div id="legacy-result" class="notice" style="display:none; margin-top:14px;"></div>
+        </div>
+        <div class="panel-footer">该文件长期没有后端接口，密码校验逻辑只在 HTML/JS 中，适合练习查看源码与前端信息泄露。</div>
+    </section>
+</main>
+<script>
+    function verifyLogin() {
+        const pass = document.getElementById('legacy-pass').value;
+        const box = document.getElementById('legacy-result');
+        const secret = btoa('legacy2026');
+        box.style.display = 'block';
+        if (pass === atob(secret)) {
+            box.innerHTML = '<strong>FLAG{legacy_admin_has_no_backend}</strong>';
+        } else {
+            box.innerHTML = '<strong>密码错误。</strong>后台源码注释里保留了旧账号线索。';
+        }
+    }
+</script>
+</body>
+</html>

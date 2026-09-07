@@ -209,6 +209,30 @@
             text-decoration: underline;
         }
 
+        .lab-link {
+            text-align: center;
+            margin-top: 14px;
+        }
+
+        .lab-link a {
+            display: inline-block;
+            padding: 9px 16px;
+            color: #1565c0;
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .lab-link a:hover {
+            color: #0d47a1;
+            background: #d5e9fb;
+            transform: translateY(-1px);
+        }
+
         /* 系统信息 */
         .system-info {
             background: #e3f2fd;
@@ -262,6 +286,10 @@
 
         <div class="register-link">
             <p>还没有账号？ <a href="/register">立即注册</a></p>
+        </div>
+
+        <div class="lab-link">
+            <a href="/lab">进入 SQLi / XSS 实验区</a>
         </div>
 
         <div class="system-info">

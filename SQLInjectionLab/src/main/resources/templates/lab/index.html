@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL注入与 XSS 实验区</title>
+    <link rel="stylesheet" th:href="@{/lab/lab.css}">
+</head>
+<body>
+<div th:replace="~{lab/partials/nav :: nav('index')}"></div>
+
+<main class="page">
+    <section class="hero">
+        <div class="eyebrow">Offensive Web Lab</div>
+        <h1>SQL 注入与 XSS 学习靶场</h1>
+        <p>这里集中提供登录绕过、联合/回显查询、布尔与时间盲注、报错注入、反射与存储型 XSS、目录探测等受控练习靶点。目标环境仅限本机学习使用。</p>
+    </section>
+
+    <section class="intro-grid" aria-label="关卡统计">
+        <div class="metric">
+            <strong>7</strong>
+            <span>注入与 XSS 实验</span>
+        </div>
+        <div class="metric">
+            <strong>3</strong>
+            <span>盲注/回显变体</span>
+        </div>
+        <div class="metric">
+            <strong>1</strong>
+            <span>目录与隐藏页面挑战</span>
+        </div>
+        <div class="metric">
+            <strong>MySQL</strong>
+            <span>后端数据库引擎</span>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>SQL 注入练习</h2>
+        </div>
+        <div class="grid">
+            <a class="card tone-red" th:href="@{/}">
+                <span class="card-kind">Authentication Bypass</span>
+                <h3>登录点 SQL 注入</h3>
+                <p>用户名参数直接拼接 SQL，可绕过密码校验；错误信息还会原样回显。</p>
+                <span class="card-route">POST /login</span>
+            </a>
+            <a class="card" th:href="@{/lab/union}">
+                <span class="card-kind">Union Based</span>
+                <h3>Union 联合查询回显</h3>
+                <p>搜索关键字拼入 LIKE 条件，适合练习列数探测与 UNION 数据回显。</p>
+                <span class="card-route">/lab/union?q=</span>
+            </a>
+            <a class="card tone-red" th:href="@{/lab/sql/error}">
+                <span class="card-kind">Error Based</span>
+                <h3>MySQL 报错注入</h3>
+                <p>把数据库函数写入可控 id 参数，通过语法错误将库名等信息带出。</p>
+                <span class="card-route">/lab/sql/error?id=</span>
+            </a>
+            <a class="card tone-amber" th:href="@{/lab/sql/boolean}">
+                <span class="card-kind">Boolean Blind</span>
+                <h3>布尔盲注</h3>
+                <p>页面只反馈记录是否存在，需要构造条件逐字符猜测数据库内容。</p>
+                <span class="card-route">/lab/sql/boolean?id=</span>
+            </a>
+            <a class="card tone-amber" th:href="@{/lab/sql/time}">
+                <span class="card-kind">Time Blind</span>
+                <h3>时间盲注</h3>
+                <p>响应内容不再区分真假，改用 SLEEP 与响应耗时传递条件结果。</p>
+                <span class="card-route">/lab/sql/time?id=</span>
+            </a>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>XSS 注入练习</h2>
+        </div>
+        <div class="grid">
+            <a class="card tone-blue" th:href="@{/lab/xss/reflected}">
+                <span class="card-kind">Reflected XSS</span>
+                <h3>反射型 XSS</h3>
+                <p>搜索词直接以未转义 HTML 渲染到页面，浏览器解析后执行脚本。</p>
+                <span class="card-route">/lab/xss/reflected?q=</span>
+            </a>
+            <a class="card tone-blue" th:href="@{/lab/xss/stored}">
+                <span class="card-kind">Stored XSS</span>
+                <h3>存储型 XSS 留言板</h3>
+                <p>公开留言会持久化保存并以原始 HTML 展示，任何访问者都会触发载荷。</p>
+                <span class="card-route">/lab/xss/stored</span>
+            </a>
+            <a class="card tone-blue" th:href="@{/admin/comments}">
+                <span class="card-kind">Stored XSS Admin</span>
+                <h3>评论审核页（后台）</h3>
+                <p>后台审核列表使用未转义内容输出，登录管理员后可观察存储型 XSS。</p>
+                <span class="card-route">/admin/comments</span>
+            </a>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>信息收集挑战</h2>
+        </div>
+        <div class="grid">
+            <a class="card" th:href="@{/lab/discovery}">
+                <span class="card-kind">Directory Brute Force</span>
+                <h3>隐藏目录与静态页面</h3>
+                <p>站点保留了 robots、备份配置、开发面板与内部页面，等待用目录字典发现。</p>
+                <span class="card-route">/lab/discovery</span>
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer class="footer-note">
+    <p>实验区仅供授权测试与安全学习，请勿对非授权目标复现。</p>
+</footer>
+</body>
+</html>

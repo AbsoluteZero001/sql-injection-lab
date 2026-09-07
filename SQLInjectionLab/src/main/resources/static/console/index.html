@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>内部调试控制台</title>
+    <link rel="stylesheet" href="/lab/lab.css">
+</head>
+<body>
+<main class="page page-narrow">
+    <section class="hero">
+        <div class="eyebrow">Internal Console</div>
+        <h1>数据库调试控制台</h1>
+        <p>该页面属于遗留内部工具，未在前端入口中展示。真实业务中此类页面往往缺少访问控制，并会暴露接口路径。</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>接口状态</h2>
+            <span class="status-pill no">未认证</span>
+        </div>
+        <div class="panel-body">
+            <div class="guide">
+                <div class="guide-item">
+                    <h4>用户检索</h4>
+                    <p class="mono">/api/internal/user/search?keyword=</p>
+                </div>
+                <div class="guide-item">
+                    <h4>评论同步</h4>
+                    <p class="mono">/api/internal/comments/sync</p>
+                </div>
+                <div class="guide-item">
+                    <h4>历史备份</h4>
+                    <p class="mono">/backup/config.bak</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">页面源码注释中提到旧账号为 webadmin，建议在下次发布前移除该控制台。</div>
+    </section>
+</main>
+</body>
+</html>

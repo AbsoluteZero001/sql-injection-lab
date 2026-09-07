@@ -1,0 +1,6 @@
+2026-09-07 10:12:04 INFO  QueryRouter executed sql template #user-search
+2026-09-07 10:12:05 WARN  Slow query detected: 1830 ms
+2026-09-07 10:12:05 DEBUG Statement text contains [sleep]
+2026-09-07 10:12:06 INFO  Response returned to 127.0.0.1
+
+This directory should never be indexed by search engines.
